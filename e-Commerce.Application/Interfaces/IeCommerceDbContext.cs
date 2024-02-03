@@ -1,4 +1,6 @@
 ﻿using e_Commerce.Application.Interfaces;
+using e_Commerce.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +11,7 @@ namespace e_Commerce.Persistence
 {
     public interface IeCommerceDbContext: IDbContextBase
     {
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Product> Products { get; set; }
     }
 }

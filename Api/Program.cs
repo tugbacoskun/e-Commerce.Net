@@ -1,6 +1,9 @@
+using e_Commerce.Application;
 using e_Commerce.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using ServiceStack;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +17,12 @@ builder.Services.AddDbContextPool<eCommerceDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+builder.Services.AddTransient<IeCommerceDbContext, eCommerceDbContext>();
+
+ServiceCollectionExtensionsApplication.ServiceCollectionExtension(builder.Services);
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
