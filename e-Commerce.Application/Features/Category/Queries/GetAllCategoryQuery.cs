@@ -24,7 +24,7 @@ namespace e_Commerce.Application.Features.Category.Queries
 
        public async Task<List<GetAllCategoryResponseQuery>> Handle(GetAllCategoryRequestQuery request, CancellationToken cancellationToken)
         {
-             var categories= _context.Categories.ToListAsync();
+             List<Domain.Entities.Category> categories= await _context.Categories.ToListAsync();
             var categoryDtos= _mapper.Map<List<GetAllCategoryResponseQuery>>(categories);
             return categoryDtos;
         }

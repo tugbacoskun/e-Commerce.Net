@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace e_Commerce.Application.Features.Category.Queries
 {
-    public class GetAllCategoryResponseQuery: List<CategoryDto>
+    public class GetAllCategoryResponseQuery: CategoryDto
     {
     }
 }

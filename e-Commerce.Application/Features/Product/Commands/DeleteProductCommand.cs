@@ -24,10 +24,10 @@ namespace e_Commerce.Application.Features.Product.Commands
         public async Task<DeleteProductCommandResponse> Handle(DeleteProductCommandRequest request, CancellationToken cancellationToken)
         {
             var product= await _context.Products.FirstOrDefaultAsync(p=>p.Id==request.Id);
-             _context.Products.Remove(product);
+            _context.Products.Remove(product);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return _mapper.Map<DeleteProductCommandResponse>(product.Id);
+            return _mapper.Map<DeleteProductCommandResponse>(product);
         }
     }
 }

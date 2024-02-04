@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace e_Commerce.Application.Features.Product.Queries
 {
-    public class GetAllProductQueryResponse: List<ProductDto>
+    public class GetAllProductQueryResponse: ProductDto
     {
     }
 }

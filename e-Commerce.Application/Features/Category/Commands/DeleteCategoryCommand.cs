@@ -22,11 +22,23 @@ namespace e_Commerce.Application.Features.Category.Commands
 
         public async Task<DeleteCategoryCommandResponse> Handle(DeleteCategoryCommandRequest request, CancellationToken cancellationToken)
         {
-            var category= await _context.Categories.FirstOrDefaultAsync(x=> x.Id == request.Id);
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync(cancellationToken);
+            try
+            {
+                bool any = await _context.Products.AnyAsync(x => x.CategoryId == request.Id);
+                if (any)
+                    return null;
 
-            return _mapper.Map<DeleteCategoryCommandResponse>(category.Id);
+                var category = await _context.Categories.FirstOrDefaultAsync(x => x.Id == request.Id);
+                _context.Categories.Remove(category);
+                await _context.SaveChangesAsync(cancellationToken);
+
+                return _mapper.Map<DeleteCategoryCommandResponse>(category.Id);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }
