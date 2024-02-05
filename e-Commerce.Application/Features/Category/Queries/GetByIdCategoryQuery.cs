@@ -23,7 +23,7 @@ namespace e_Commerce.Application.Features.Category.Queries
 
         public async Task<GetByIdCategoryResponseQuery> Handle(GetByIdCategoryRequestQuery request, CancellationToken cancellationToken)
         {
-            var category= await _context.Categories.FirstOrDefaultAsync(p=>p.Id==request.Id);
+            var category= await _context.Categories.FirstOrDefaultAsync(p=>p.Id==request.Id && p.IsActive && !p.IsDeleted);
             var categoryDto = _mapper.Map<GetByIdCategoryResponseQuery>(category);
             return categoryDto;
         }

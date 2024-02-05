@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using e_Commerce.Application.Dtos;
+using e_Commerce.Application.Fluent_Validation;
 using e_Commerce.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -23,11 +24,21 @@ namespace e_Commerce.Application.Features.Category.Commands
 
         public async Task<AddCategoryCommandResponse> Handle(AddCategoryCommandRequest request, CancellationToken cancellationToken)
         {
-            var category = _mapper.Map<Domain.Entities.Category>(request);
-            await _context.AddAsync(category, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
+            var validator = new CategoryFluentValidatior();
+            var result = validator.Validate(request);
+            if (result.IsValid)
+            {
+                var category = _mapper.Map<Domain.Entities.Category>(request);
+                await _context.AddAsync(category, cancellationToken);
+                await _context.SaveChangesAsync(cancellationToken);
 
-            return _mapper.Map<AddCategoryCommandResponse>(category);
+                return _mapper.Map<AddCategoryCommandResponse>(category);
+            }
+            else
+            {
+                return null;
+            }
+
 
         }
     }

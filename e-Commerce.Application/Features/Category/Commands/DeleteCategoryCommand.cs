@@ -29,7 +29,8 @@ namespace e_Commerce.Application.Features.Category.Commands
                     return null;
 
                 var category = await _context.Categories.FirstOrDefaultAsync(x => x.Id == request.Id);
-                _context.Categories.Remove(category);
+                category.IsDeleted = true;
+                _context.Categories.Update(category);
                 await _context.SaveChangesAsync(cancellationToken);
 
                 return _mapper.Map<DeleteCategoryCommandResponse>(category.Id);

@@ -44,8 +44,8 @@ namespace e_Commerce.Application.Mapping
             CreateMap<Product, DeleteProductCommandRequest>().ReverseMap();
             CreateMap<Product, DeleteProductCommandResponse>().ReverseMap();
 
-            CreateMap<Product, UpdateCategoryCommandRequest>().ReverseMap();
-            CreateMap<Product, UpdateCategoryCommandResponse>().ReverseMap();
+            CreateMap<Product, UpdateProductCommandRequest>().ReverseMap();
+            CreateMap<Product, UpdateProductCommandResponse>().ReverseMap();
         }    
     }
 }

@@ -9,7 +9,7 @@ namespace e_Commerce.Domain.Base
     public abstract class BaseEntity
     {
         public Guid Id { get; set; } = Guid.NewGuid();
-        public bool IsActive { get; set; } = false;
+        public bool IsActive { get; set; } = true;
         public bool IsDeleted { get; set; }= false;
         public DateTime? UpdatedDate { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;

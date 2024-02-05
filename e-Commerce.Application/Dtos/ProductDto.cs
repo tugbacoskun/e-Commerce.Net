@@ -10,13 +10,12 @@ namespace e_Commerce.Application.Dtos
 {
     public class ProductDto: BaseDto
     {
-     
         public string Name { get; set; }
         public string Description { get; set; }
         public decimal Price { get; set; }
         public string Image { get; set; }
         public CurrencyTypeLookup ProductCurrency { get; set; }
         public Guid CategoryId { get; set; }
-        public virtual CategoryDto Category { get; set; }
+        
     }
 }

@@ -30,11 +30,12 @@ namespace e_Commerce.Application.Features.Product.Commands
             product.Description = request.Description;
             product.Image= request.Image;
             product.Name= request.Name;
+           
 
             _context.Products.Update(product);
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<UpdateProductCommandResponse>(request);
+            return _mapper.Map<UpdateProductCommandResponse>(product);
         }
     }
 }
