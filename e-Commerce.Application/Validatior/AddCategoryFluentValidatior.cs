@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace e_Commerce.Application.Fluent_Validation
 {
-    public class CategoryFluentValidatior: AbstractValidator<AddCategoryCommandRequest>
+    public class AddCategoryFluentValidatior: AbstractValidator<AddCategoryCommandRequest>
     {
-        public CategoryFluentValidatior() 
+        public AddCategoryFluentValidatior() 
         {
             RuleFor(category => category.Name).NotEmpty().WithMessage("Kategori adı boş olamaz.");
         }

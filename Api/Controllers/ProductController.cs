@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using e_Commerce.Application.Features.Product.Commands;
 using e_Commerce.Application.Features.Product.Queries;
+using e_Commerce.Application.Response;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,14 +36,14 @@ namespace Api.Controllers
         }
 
         [HttpPost("Add")]
-        public async Task<AddProductCommandResponse> Add(AddProductCommandRequest request)
+        public async Task<DataResult> Add(AddProductCommandRequest request)
         {
             var resp= await _mediator.Send(request);
             return resp;
         }
 
         [HttpPut("Update")]
-        public async Task<UpdateProductCommandResponse> Update(UpdateProductCommandRequest request)
+        public async Task<DataResult> Update(UpdateProductCommandRequest request)
         {
             return await _mediator.Send(request);
         }

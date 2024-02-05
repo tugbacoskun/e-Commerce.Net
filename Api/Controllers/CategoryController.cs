@@ -1,5 +1,6 @@
 ﻿using e_Commerce.Application.Features.Category.Commands;
 using e_Commerce.Application.Features.Category.Queries;
+using e_Commerce.Application.Response;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,14 +35,14 @@ namespace Api.Controllers
         }
 
         [HttpPost("Add")]
-        public async Task<AddCategoryCommandResponse> Add([FromBody] AddCategoryCommandRequest request)
+        public async Task<DataResult> Add([FromBody] AddCategoryCommandRequest request)
         {
             var resp = await _mediator.Send(request);
             return resp;
         }
 
         [HttpPut("Update")]
-        public async Task<UpdateCategoryCommandResponse> Update([FromBody] UpdateCategoryCommandRequest request)
+        public async Task<DataResult> Update([FromBody] UpdateCategoryCommandRequest request)
         {
             return await _mediator.Send(request);
         }

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using e_Commerce.Application.Dtos;
+using e_Commerce.Application.Fluent_Validation;
+using e_Commerce.Application.Response;
 using e_Commerce.Persistence;
 using MediatR;
 using System;
@@ -10,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace e_Commerce.Application.Features.Product.Commands
 {
-    public class AddProductCommand : IRequestHandler<AddProductCommandRequest, AddProductCommandResponse>
+    public class AddProductCommand : IRequestHandler<AddProductCommandRequest, DataResult>
     {
         private readonly IMapper _mapper;
         private readonly IeCommerceDbContext _context;
@@ -21,13 +23,51 @@ namespace e_Commerce.Application.Features.Product.Commands
             _context = context;
         }
 
-        public async Task<AddProductCommandResponse> Handle(AddProductCommandRequest request, CancellationToken cancellationToken)
+        public async Task<DataResult> Handle(AddProductCommandRequest request, CancellationToken cancellationToken)
         {
-            var product = _mapper.Map<e_Commerce.Domain.Entities.Product>(request);
-            await _context.Products.AddAsync(product, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
+            try
+            {
+                var validator = new AddProductFluentValidatior();
+                var result = validator.Validate(request);
 
-            return _mapper.Map<AddProductCommandResponse>(product);
+                if (result.IsValid)
+                {
+                    var product = _mapper.Map<Domain.Entities.Product>(request);
+                    await _context.Products.AddAsync(product, cancellationToken);
+                    await _context.SaveChangesAsync(cancellationToken);
+
+                    var data = _mapper.Map<AddProductCommandResponse>(product);
+
+                    return new DataResult
+                    {
+                        Data = data,
+                        IsSuccess = true,
+                        Message = "İşlem Başarılı"
+                    };
+                }
+                else
+                {
+                    return new DataResult
+                    {
+                        Data = null,
+                        IsSuccess = false,
+                        Message = result.Errors
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return new DataResult
+                {
+                    Data = null,
+                    IsSuccess = false,
+                    Message = ex.ToString()
+                };
+            }
+
+
+
         }
     }
 }

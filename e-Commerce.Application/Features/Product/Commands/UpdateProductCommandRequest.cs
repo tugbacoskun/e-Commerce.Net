@@ -1,4 +1,5 @@
 ﻿using e_Commerce.Application.Dtos;
+using e_Commerce.Application.Response;
 using e_Commerce.Domain.Enum;
 using MediatR;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace e_Commerce.Application.Features.Product.Commands
 {
-    public class UpdateProductCommandRequest : IRequest<UpdateProductCommandResponse>
+    public class UpdateProductCommandRequest : IRequest<DataResult>
     {
         public Guid Id { get; set; } 
         public string Name { get; set; }
