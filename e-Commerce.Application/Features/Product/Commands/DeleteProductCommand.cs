@@ -1,12 +1,9 @@
 ﻿using AutoMapper;
+using e_Commerce.Application.Redis;
 using e_Commerce.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace e_Commerce.Application.Features.Product.Commands
 {
@@ -14,11 +11,13 @@ namespace e_Commerce.Application.Features.Product.Commands
     {
         private readonly IMapper _mapper;
         private readonly IeCommerceDbContext _context;
+        private readonly IRedisCacheService _redisCacheService;
 
-        public DeleteProductCommand(IMapper mapper, IeCommerceDbContext context)
+        public DeleteProductCommand(IMapper mapper, IeCommerceDbContext context, IRedisCacheService redisCacheService)
         {
             _mapper = mapper;
             _context = context;
+            _redisCacheService = redisCacheService;
         }
 
         public async Task<DeleteProductCommandResponse> Handle(DeleteProductCommandRequest request, CancellationToken cancellationToken)
@@ -27,6 +26,8 @@ namespace e_Commerce.Application.Features.Product.Commands
             product.IsDeleted=true;
             _context.Products.Update(product);
             await _context.SaveChangesAsync(cancellationToken);
+
+            await _redisCacheService.Clear("Product_" +  request.Id);
 
             return _mapper.Map<DeleteProductCommandResponse>(product);
         }

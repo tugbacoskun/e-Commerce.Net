@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using e_Commerce.Application.Dtos;
 using e_Commerce.Application.Fluent_Validation;
+using e_Commerce.Application.Redis;
 using e_Commerce.Application.Response;
 using e_Commerce.Persistence;
 using MediatR;
@@ -8,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace e_Commerce.Application.Features.Product.Commands
@@ -16,11 +18,13 @@ namespace e_Commerce.Application.Features.Product.Commands
     {
         private readonly IMapper _mapper;
         private readonly IeCommerceDbContext _context;
+        private readonly IRedisCacheService _redisCacheService;
 
-        public AddProductCommand(IMapper mapper, IeCommerceDbContext context)
+        public AddProductCommand(IMapper mapper, IeCommerceDbContext context, IRedisCacheService redisCacheService)
         {
             _mapper = mapper;
             _context = context;
+            _redisCacheService = redisCacheService;
         }
 
         public async Task<DataResult> Handle(AddProductCommandRequest request, CancellationToken cancellationToken)
@@ -34,9 +38,10 @@ namespace e_Commerce.Application.Features.Product.Commands
                 {
                     var product = _mapper.Map<Domain.Entities.Product>(request);
                     await _context.Products.AddAsync(product, cancellationToken);
-                    await _context.SaveChangesAsync(cancellationToken);
-
+                    await _context.SaveChangesAsync(cancellationToken); 
                     var data = _mapper.Map<AddProductCommandResponse>(product);
+
+                    await _redisCacheService.SetValueAsync("Product_" + product.Id, JsonSerializer.Serialize(product));
 
                     return new DataResult
                     {

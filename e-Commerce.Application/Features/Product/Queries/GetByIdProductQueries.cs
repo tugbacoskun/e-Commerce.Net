@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using e_Commerce.Application.Dtos;
+using e_Commerce.Application.Redis;
 using e_Commerce.Domain.Entities;
 using e_Commerce.Persistence;
 using MediatR;
@@ -18,18 +19,24 @@ namespace e_Commerce.Application.Features.Product.Queries
     {
         private readonly IMapper _mapper;
         private readonly IeCommerceDbContext _dbContext;
-        public GetByIdProductQueries(IMapper mapper, IeCommerceDbContext dbContext)
+        private readonly IRedisCacheService _redisCacheService;
+        public GetByIdProductQueries(IMapper mapper, IeCommerceDbContext dbContext, IRedisCacheService redisCacheService)
         {
             _mapper = mapper;
             _dbContext = dbContext;
+            _redisCacheService = redisCacheService;
         }
-        
+
 
         public async Task<GetByIdProductQueriesResponse> Handle(GetByIdProductQueriesRequest request, CancellationToken cancellationToken)
         {
+
+
             var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == request.Id);
 
             var productDto = _mapper.Map<GetByIdProductQueriesResponse>(product);
+
+            await _redisCacheService.GetValueAsync("Product_" + product.Id);
 
             return productDto;
         }

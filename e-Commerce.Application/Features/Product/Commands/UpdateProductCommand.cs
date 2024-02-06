@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using e_Commerce.Application.Fluent_Validation;
+using e_Commerce.Application.Redis;
 using e_Commerce.Application.Response;
 using e_Commerce.Persistence;
 using MediatR;
@@ -8,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace e_Commerce.Application.Features.Product.Commands
@@ -16,11 +18,13 @@ namespace e_Commerce.Application.Features.Product.Commands
     {
         private readonly IMapper _mapper;
         private readonly IeCommerceDbContext _context;
+        private readonly IRedisCacheService _redisCacheService;
 
-        public UpdateProductCommand(IMapper mapper, IeCommerceDbContext context)
+        public UpdateProductCommand(IMapper mapper, IeCommerceDbContext context, IRedisCacheService redisCacheService)
         {
             _mapper = mapper;
             _context = context;
+            _redisCacheService = redisCacheService;
         }
 
         public async Task<DataResult> Handle(UpdateProductCommandRequest request, CancellationToken cancellationToken)
@@ -44,6 +48,9 @@ namespace e_Commerce.Application.Features.Product.Commands
                     await _context.SaveChangesAsync();
 
                     var data = _mapper.Map<UpdateProductCommandResponse>(product);
+
+                    await _redisCacheService.Clear("Product_" + product.Id);
+                    await _redisCacheService.SetValueAsync("Product_" + product.Id, JsonSerializer.Serialize(product));
 
                     return new DataResult
                     {
