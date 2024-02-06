@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using e_Commerce.Application.Dtos;
 using e_Commerce.Application.Redis;
+using e_Commerce.Application.Response;
 using e_Commerce.Domain.Entities;
 using e_Commerce.Persistence;
 using MediatR;
@@ -11,11 +12,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace e_Commerce.Application.Features.Product.Queries
 {
-    public class GetByIdProductQueries: IRequestHandler<GetByIdProductQueriesRequest, GetByIdProductQueriesResponse>
+    public class GetByIdProductQueries: IRequestHandler<GetByIdProductQueriesRequest, DataResult>
     {
         private readonly IMapper _mapper;
         private readonly IeCommerceDbContext _dbContext;
@@ -28,17 +30,44 @@ namespace e_Commerce.Application.Features.Product.Queries
         }
 
 
-        public async Task<GetByIdProductQueriesResponse> Handle(GetByIdProductQueriesRequest request, CancellationToken cancellationToken)
+        public async Task<DataResult> Handle(GetByIdProductQueriesRequest request, CancellationToken cancellationToken)
         {
+            var redisProduct= await _redisCacheService.GetValueAsync("Product_" + request.Id);
 
+            if (redisProduct != null)
+            {
+                return new DataResult
+                {
+                    Data = redisProduct,
+                    IsSuccess = true,
+                    Message = "İşlem başarılı"
+                };
+            }
 
             var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == request.Id);
 
-            var productDto = _mapper.Map<GetByIdProductQueriesResponse>(product);
+            if (product != null)
+            {
+                await _redisCacheService.SetValueAsync("Product_" + request.Id, JsonSerializer.Serialize(product));
+                var productDto = _mapper.Map<GetByIdProductQueriesResponse>(product);
 
-            await _redisCacheService.GetValueAsync("Product_" + product.Id);
+                return new DataResult
+                {
+                    Data = productDto,
+                    IsSuccess = true,
+                    Message = "İşlem başarılı"
+                };
+            }
 
-            return productDto;
+            else
+            {
+                return new DataResult
+                {
+                    Data = null,
+                    IsSuccess = true,
+                    Message = "Ürün Bulunamadı"
+                };
+            }
         }
     }
 }

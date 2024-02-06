@@ -21,7 +21,7 @@ namespace e_Commerce.Application.Mapping
             CreateMap<Category, CategoryDto>().ReverseMap();
 
             CreateMap<Category, GetByIdCategoryResponseQuery>().ReverseMap();
-            CreateMap<Category, GetAllCategoryResponseQuery>();
+            CreateMap<ProductDto, GetAllCategoryResponseQuery>().ReverseMap();
 
             CreateMap<Category, AddCategoryCommandRequest>().ReverseMap();
             CreateMap<Category, AddCategoryCommandResponse>().ReverseMap();
@@ -39,7 +39,7 @@ namespace e_Commerce.Application.Mapping
             CreateMap<Product, AddProductCommandResponse>().ReverseMap();
 
             CreateMap<Product, GetByIdProductQueriesResponse>().ReverseMap();
-            CreateMap<Product, GetAllProductQueryResponse>().ReverseMap();
+            CreateMap<ProductDto, GetAllProductQueryResponse>().ReverseMap();
 
             CreateMap<Product, DeleteProductCommandRequest>().ReverseMap();
             CreateMap<Product, DeleteProductCommandResponse>().ReverseMap();

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using e_Commerce.Application.Dtos;
 using e_Commerce.Application.Fluent_Validation;
+using e_Commerce.Application.Redis;
 using e_Commerce.Application.Response;
 using e_Commerce.Persistence;
 using MediatR;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -18,10 +20,12 @@ namespace e_Commerce.Application.Features.Category.Commands
     {
         private readonly IMapper _mapper;
         private readonly IeCommerceDbContext _context;
-        public AddCategoryCommand(IMapper mapper, IeCommerceDbContext context)
+        private readonly IRedisCacheService _redisCacheService;
+        public AddCategoryCommand(IMapper mapper, IeCommerceDbContext context, IRedisCacheService redisCacheService)
         {
             _mapper = mapper;
             _context = context;
+            _redisCacheService = redisCacheService;
         }
 
         public async Task<DataResult> Handle(AddCategoryCommandRequest request, CancellationToken cancellationToken)
@@ -37,6 +41,8 @@ namespace e_Commerce.Application.Features.Category.Commands
                     await _context.SaveChangesAsync(cancellationToken);
 
                     var data = _mapper.Map<AddCategoryCommandResponse>(category);
+
+                    await _redisCacheService.SetValueAsync("Category_" + category.Id, JsonSerializer.Serialize(category));
 
                     return new DataResult
                     {

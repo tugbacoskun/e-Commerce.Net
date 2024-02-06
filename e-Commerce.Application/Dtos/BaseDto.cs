@@ -8,10 +8,10 @@ namespace e_Commerce.Application.Dtos
 {
     public abstract class BaseDto
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
-        public bool IsActive { get; set; } = true;
-        public bool IsDeleted { get; set; } = false;
+        public Guid Id { get; set; }
+        public bool IsActive { get; set; }
+        public bool IsDeleted { get; set; }
         public DateTime? UpdatedDate { get; set; }
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedDate { get; set; }
     }
 }

@@ -21,14 +21,14 @@ namespace Api.Controllers
         }
 
         [HttpGet("GetById")]
-        public async Task<GetByIdProductQueriesResponse> GetById([FromQuery] GetByIdProductQueriesRequest request)
+        public async Task<DataResult> GetById([FromQuery] GetByIdProductQueriesRequest request)
         {
             var resp = await _mediator.Send(request);
             return resp;
         }
 
         [HttpGet("GetAllProduct")]
-        public async Task<List<GetAllProductQueryResponse>> GetAllProduct([FromQuery]GetAllProductQueryRequest request)
+        public async Task<DataResult> GetAllProduct([FromQuery]GetAllProductQueryRequest request)
         {  
             var resp= await _mediator.Send(request);
             return resp;
@@ -49,7 +49,7 @@ namespace Api.Controllers
         }
 
         [HttpDelete("Delete")]
-        public async Task<DeleteProductCommandResponse> Delete(DeleteProductCommandRequest request)
+        public async Task<DataResult> Delete(DeleteProductCommandRequest request)
         {
             return await _mediator.Send(request);
         }

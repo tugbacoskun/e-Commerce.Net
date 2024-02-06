@@ -1,4 +1,5 @@
-﻿using System;
+﻿using e_Commerce.Application.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,5 +15,6 @@ namespace e_Commerce.Application.Redis
         T GetOrAdd<T>(string key, Func<T> action) where T : class;
         Task Clear(string key);
         void ClearAll();
+        Task<List<ProductDto>> GetAllValuesStartingWithAsync(string keyPrefix);
     }
 }

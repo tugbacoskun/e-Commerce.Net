@@ -20,14 +20,14 @@ namespace Api.Controllers
         }
 
         [HttpGet("GetById")]
-        public async Task<GetByIdCategoryResponseQuery> GetById([FromQuery]GetByIdCategoryRequestQuery request)
+        public async Task<DataResult> GetById([FromQuery]GetByIdCategoryRequestQuery request)
         {
             var resp = await _mediator.Send(request);
             return resp;
         }
 
         [HttpGet("GetAllCategory")]
-        public async Task<List<GetAllCategoryResponseQuery>> GetAllCategory([FromQuery] GetAllCategoryRequestQuery request)
+        public async Task<DataResult> GetAllCategory([FromQuery] GetAllCategoryRequestQuery request)
         {
             var resp = await _mediator.Send(request);
             return resp;
@@ -48,7 +48,7 @@ namespace Api.Controllers
         }
 
         [HttpDelete("Delete")]
-        public async Task<DeleteCategoryCommandResponse> Delete(DeleteCategoryCommandRequest request)
+        public async Task<DataResult> Delete(DeleteCategoryCommandRequest request)
         {
             return await _mediator.Send(request);
         }
