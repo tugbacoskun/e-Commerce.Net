@@ -27,8 +27,9 @@ namespace e_Commerce.Application.Features.ExchangeRate.Commands
             {
                 XmlDocument xmlVerisi = new XmlDocument();
                 xmlVerisi.Load("http://www.tcmb.gov.tr/kurlar/today.xml");
-                decimal usdValue = Convert.ToDecimal(xmlVerisi.SelectSingleNode(string.Format("Tarih_Date/Currency[@Kod='{0}']/ForexSelling", "USD")).InnerText.Replace('.', ','));
-                decimal eurValue = Convert.ToDecimal(xmlVerisi.SelectSingleNode(string.Format("Tarih_Date/Currency[@Kod='{0}']/ForexSelling", "EUR")).InnerText.Replace('.', ','));
+
+                decimal usdValue = Math.Round(Convert.ToDecimal(xmlVerisi.SelectSingleNode($"Tarih_Date/Currency[@Kod='USD']/ForexSelling").InnerText.Replace('.', ',')), 2);
+                decimal eurValue = Math.Round(Convert.ToDecimal(xmlVerisi.SelectSingleNode($"Tarih_Date/Currency[@Kod='EUR']/ForexSelling").InnerText.Replace('.', ',')), 2);
 
                 // USD ExchangeRate nesnesini kontrol et ve gerekirse güncelle veya ekle
                 var exchangeRateUsd = await _context.ExchangeRates.FirstOrDefaultAsync(x => x.CurrencyTypeId == Domain.Enum.CurrencyTypeLookup.USD);
@@ -58,6 +59,7 @@ namespace e_Commerce.Application.Features.ExchangeRate.Commands
                 await _context.SaveChangesAsync();
 
                 return true;
+
             }
             catch (Exception ex)
             {

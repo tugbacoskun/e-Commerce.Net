@@ -2,6 +2,7 @@
 using e_Commerce.Application.Jobs;
 using e_Commerce.Application.Redis;
 using Hangfire;
+using Hangfire.MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -18,6 +19,7 @@ namespace e_Commerce.Application
             services.AddHangfire(config =>
             {
                 config.UseSqlServerStorage(configuration.GetConnectionString("HangfireConnection"));
+            
             });
             services.AddScoped<UpdateCommandExchangeRate>();
 

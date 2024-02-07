@@ -1,7 +1,9 @@
 using e_Commerce.Application;
+using e_Commerce.Application.Features.ExchangeRate.Commands;
 using e_Commerce.Application.Jobs;
 using e_Commerce.Persistence;
 using Hangfire;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ServiceStack;
 using StackExchange.Redis;
@@ -35,10 +37,8 @@ var app = builder.Build();
     app.UseSwagger();
     app.UseSwaggerUI();
 app.UseHangfireDashboard("/hangfire");
-//BackgroundJob.Enqueue<ExchangeRateUpdaterJob>(x => x.UpdateCommandExchangeRate());
-RecurringJob.AddOrUpdate<ExchangeRateUpdaterJob>("ExchangeRateUpdateJob", x => x.UpdateCommandExchangeRate(), Cron.MinuteInterval(5)); // Her 5 dakikada bir çal??acak
-
-
+app.UseHangfireServer();
+RecurringJobs.Start();
 
 
 app.UseHttpsRedirection();

@@ -14,7 +14,8 @@ namespace e_Commerce.Domain.Entities
     {
         public CurrencyTypeLookup CurrencyTypeId { get; set; }
 
-        [Column(TypeName = "decimal(18, 2)")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal Value { get; set; }
+
     }
 }
