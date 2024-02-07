@@ -1,23 +1,26 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
-using AutoMapper;
-using Hangfire;
-using Hangfire.MemoryStorage;
-using e_Commerce.Application.Hangfire;
+﻿using e_Commerce.Application.Features.ExchangeRate.Commands;
+using e_Commerce.Application.Jobs;
 using e_Commerce.Application.Redis;
+using Hangfire;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace e_Commerce.Application
 {
     public static class ServiceCollectionExtensionsApplication
     {
-        public static IServiceCollection ServiceCollectionExtension(this IServiceCollection services, params Type[] types)
+        public static IServiceCollection ServiceCollectionExtension(this IServiceCollection services, IConfiguration configuration, params Type[] types)
         {
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
-
-            services.AddHangfire(config => config.UseMemoryStorage());
-            services.AddTransient<HangfireService>();
             services.AddSingleton<IRedisCacheService, RedisCacheService>();
+            services.AddHangfire(config =>
+            {
+                config.UseSqlServerStorage(configuration.GetConnectionString("HangfireConnection"));
+            });
+            services.AddScoped<UpdateCommandExchangeRate>();
+
             return services;
         }
     }

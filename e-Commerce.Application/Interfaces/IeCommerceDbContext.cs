@@ -13,5 +13,6 @@ namespace e_Commerce.Persistence
     {
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<ExchangeRate> ExchangeRates { get; set; }
     }
 }

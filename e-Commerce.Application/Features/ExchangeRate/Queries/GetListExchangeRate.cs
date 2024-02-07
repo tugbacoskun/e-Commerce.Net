@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace e_Commerce.Application.Hangfire
+namespace e_Commerce.Application.Features.ExchangeRate.Queries
 {
-    public class HangfireService
+    public class GetListExchangeRate
     {
     }
 }

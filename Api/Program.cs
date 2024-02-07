@@ -1,11 +1,10 @@
 using e_Commerce.Application;
+using e_Commerce.Application.Jobs;
 using e_Commerce.Persistence;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using ServiceStack;
 using StackExchange.Redis;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +14,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddDbContextPool<eCommerceDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -22,20 +22,24 @@ builder.Services.AddDbContextPool<eCommerceDbContext>(options =>
 
 builder.Services.AddTransient<IeCommerceDbContext, eCommerceDbContext>();
 
-ServiceCollectionExtensionsApplication.ServiceCollectionExtension(builder.Services);
+ServiceCollectionExtensionsApplication.ServiceCollectionExtension(builder.Services,builder.Configuration);
 
 var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
 builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnectionString));
 
+ 
+
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
+
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseHangfireServer();
-    app.UseHangfireDashboard();
-}
+app.UseHangfireDashboard("/hangfire");
+//BackgroundJob.Enqueue<ExchangeRateUpdaterJob>(x => x.UpdateCommandExchangeRate());
+RecurringJob.AddOrUpdate<ExchangeRateUpdaterJob>("ExchangeRateUpdateJob", x => x.UpdateCommandExchangeRate(), Cron.MinuteInterval(5)); // Her 5 dakikada bir çal??acak
+
+
+
 
 app.UseHttpsRedirection();
 
