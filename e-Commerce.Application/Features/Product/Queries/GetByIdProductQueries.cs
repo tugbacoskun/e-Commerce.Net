@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using e_Commerce.Application.Interfaces;
 using e_Commerce.Application.Redis;
 using e_Commerce.Application.Response;
 using e_Commerce.Persistence;
@@ -11,13 +12,13 @@ namespace e_Commerce.Application.Features.Product.Queries
     public class GetByIdProductQueries: IRequestHandler<GetByIdProductQueriesRequest, DataResult>
     {
         private readonly IMapper _mapper;
-        private readonly IeCommerceDbContext _dbContext;
+        private readonly IProductRepository _productRepository;
         private readonly IRedisCacheService _redisCacheService;
-        public GetByIdProductQueries(IMapper mapper, IeCommerceDbContext dbContext, IRedisCacheService redisCacheService)
+        public GetByIdProductQueries(IMapper mapper, IRedisCacheService redisCacheService, IProductRepository productRepository)
         {
             _mapper = mapper;
-            _dbContext = dbContext;
             _redisCacheService = redisCacheService;
+            _productRepository = productRepository;
         }
 
 
@@ -35,7 +36,7 @@ namespace e_Commerce.Application.Features.Product.Queries
                 };
             }
 
-            var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == request.Id);
+            var product = await _productRepository.GetByIdAsync(request.Id);
 
             if (product != null)
             {

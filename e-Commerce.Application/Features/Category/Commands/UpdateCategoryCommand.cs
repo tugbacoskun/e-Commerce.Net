@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using e_Commerce.Application.Fluent_Validation;
+using e_Commerce.Application.Interfaces;
 using e_Commerce.Application.Redis;
 using e_Commerce.Application.Response;
 using e_Commerce.Persistence;
@@ -17,13 +18,13 @@ namespace e_Commerce.Application.Features.Category.Commands
     public class UpdateCategoryCommand : IRequestHandler<UpdateCategoryCommandRequest, DataResult>
     {
         private readonly IMapper _mapper;
-        private readonly IeCommerceDbContext _context;
+        private readonly ICategoryRepository _categoryRepository;
         private readonly IRedisCacheService _redisCacheService;
-        public UpdateCategoryCommand(IMapper mapper, IeCommerceDbContext context, IRedisCacheService redisCacheService)
+        public UpdateCategoryCommand(IMapper mapper, IRedisCacheService redisCacheService, ICategoryRepository categoryRepository)
         {
             _mapper = mapper;
-            _context = context;
             _redisCacheService = redisCacheService;
+            _categoryRepository = categoryRepository;
         }
 
         public async Task<DataResult> Handle(UpdateCategoryCommandRequest request, CancellationToken cancellationToken)
@@ -34,12 +35,11 @@ namespace e_Commerce.Application.Features.Category.Commands
                 var result = validator.Validate(request);
                 if (result.IsValid)
                 {
-                    var category = await _context.Categories.FirstOrDefaultAsync(x => x.Id == request.Id);
+                    var category = await _categoryRepository.GetByIdAsync(request.Id);
                     category.Name = request.Name;
                     category.UpdatedDate= DateTime.UtcNow;
 
-                    _context.Categories.Update(category);
-                    await _context.SaveChangesAsync();
+                    await _categoryRepository.UpdateAsync(category);
 
                     var data = _mapper.Map<UpdateCategoryCommandResponse>(category);
 

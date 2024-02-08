@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using e_Commerce.Application.Dtos;
 using e_Commerce.Application.Fluent_Validation;
+using e_Commerce.Application.Interfaces;
 using e_Commerce.Application.Redis;
 using e_Commerce.Application.Response;
 using e_Commerce.Persistence;
@@ -19,13 +20,13 @@ namespace e_Commerce.Application.Features.Category.Commands
     public class AddCategoryCommand : IRequestHandler<AddCategoryCommandRequest, DataResult>
     {
         private readonly IMapper _mapper;
-        private readonly IeCommerceDbContext _context;
+        private readonly ICategoryRepository _categoryRepository;
         private readonly IRedisCacheService _redisCacheService;
-        public AddCategoryCommand(IMapper mapper, IeCommerceDbContext context, IRedisCacheService redisCacheService)
+        public AddCategoryCommand(IMapper mapper, IRedisCacheService redisCacheService, ICategoryRepository categoryRepository)
         {
             _mapper = mapper;
-            _context = context;
             _redisCacheService = redisCacheService;
+            _categoryRepository = categoryRepository;
         }
 
         public async Task<DataResult> Handle(AddCategoryCommandRequest request, CancellationToken cancellationToken)
@@ -37,8 +38,7 @@ namespace e_Commerce.Application.Features.Category.Commands
                 if (result.IsValid)
                 {
                     var category = _mapper.Map<Domain.Entities.Category>(request);
-                    await _context.AddAsync(category, cancellationToken);
-                    await _context.SaveChangesAsync(cancellationToken);
+                    await _categoryRepository.AddAsync(category);
 
                     var data = _mapper.Map<AddCategoryCommandResponse>(category);
 

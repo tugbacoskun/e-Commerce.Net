@@ -1,4 +1,5 @@
-﻿using e_Commerce.Application.Response;
+﻿using e_Commerce.Application.Interfaces;
+using e_Commerce.Application.Response;
 using e_Commerce.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,17 +14,17 @@ namespace e_Commerce.Application.Features.ExchangeRate.Queries
     public class GetListExchangeRate : IRequestHandler<GetExchangeRateQueryRequest, DataResult>
     {
         private readonly IMediator _mediator;
-        private readonly IeCommerceDbContext _context;
+        private readonly IExchangeRateRepository _exchangeRateRepository;
 
-        public GetListExchangeRate(IMediator mediator, IeCommerceDbContext context)
+        public GetListExchangeRate(IMediator mediator, IExchangeRateRepository exchangeRateRepository)
         {
             _mediator = mediator;
-            _context = context;
+            _exchangeRateRepository = exchangeRateRepository;
         }
 
-       public async Task<DataResult>Handle(GetExchangeRateQueryRequest request, CancellationToken cancellationToken)
+        public async Task<DataResult>Handle(GetExchangeRateQueryRequest request, CancellationToken cancellationToken)
         {
-            var exchangeRateList = await _context.ExchangeRates.ToListAsync();
+            var exchangeRateList = await _exchangeRateRepository.GetAllAsync();
             return new DataResult
             {
                 Data = exchangeRateList,

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using e_Commerce.Application.Interfaces;
 using e_Commerce.Application.Redis;
 using e_Commerce.Application.Response;
 using e_Commerce.Persistence;
@@ -16,14 +17,14 @@ namespace e_Commerce.Application.Features.Category.Queries
     public class GetByIdCategoryQuery : IRequestHandler<GetByIdCategoryRequestQuery, DataResult>
     {
         private readonly IMapper _mapper;
-        private readonly IeCommerceDbContext _context;
+        private readonly ICategoryRepository _categoryRepository;
         private readonly IRedisCacheService _redisCacheService;
 
-        public GetByIdCategoryQuery(IMapper mapper, IeCommerceDbContext context, IRedisCacheService redisCacheService)
+        public GetByIdCategoryQuery(IMapper mapper, IeCommerceDbContext context, IRedisCacheService redisCacheService, ICategoryRepository categoryRepository)
         {
             _mapper = mapper;
-            _context = context;
             _redisCacheService = redisCacheService;
+            _categoryRepository = categoryRepository;
         }
 
         public async Task<DataResult> Handle(GetByIdCategoryRequestQuery request, CancellationToken cancellationToken)
@@ -39,7 +40,7 @@ namespace e_Commerce.Application.Features.Category.Queries
                 };
             }
 
-            var category = await _context.Categories.FirstOrDefaultAsync(p => p.Id == request.Id);
+            var category = await _categoryRepository.GetByIdAsync(request.Id);
 
 
 

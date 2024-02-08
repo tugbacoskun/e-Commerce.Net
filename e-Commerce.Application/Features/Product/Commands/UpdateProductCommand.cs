@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using e_Commerce.Application.Fluent_Validation;
+using e_Commerce.Application.Interfaces;
 using e_Commerce.Application.Redis;
 using e_Commerce.Application.Response;
 using e_Commerce.Persistence;
@@ -17,14 +18,14 @@ namespace e_Commerce.Application.Features.Product.Commands
     public class UpdateProductCommand : IRequestHandler<UpdateProductCommandRequest, DataResult>
     {
         private readonly IMapper _mapper;
-        private readonly IeCommerceDbContext _context;
+        private readonly IProductRepository _productRepository;
         private readonly IRedisCacheService _redisCacheService;
 
-        public UpdateProductCommand(IMapper mapper, IeCommerceDbContext context, IRedisCacheService redisCacheService)
+        public UpdateProductCommand(IMapper mapper, IRedisCacheService redisCacheService, IProductRepository productRepository)
         {
             _mapper = mapper;
-            _context = context;
             _redisCacheService = redisCacheService;
+            _productRepository = productRepository;
         }
 
         public async Task<DataResult> Handle(UpdateProductCommandRequest request, CancellationToken cancellationToken)
@@ -35,7 +36,7 @@ namespace e_Commerce.Application.Features.Product.Commands
                 var result = validator.Validate(request);
                 if (result.IsValid)
                 {
-                    var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == request.Id);
+                    var product = await _productRepository.GetByIdAsync(request.Id);
                     product.ProductCurrency = request.ProductCurrency;
                     product.Price = request.Price;
                     product.CategoryId = request.CategoryId;
@@ -44,8 +45,7 @@ namespace e_Commerce.Application.Features.Product.Commands
                     product.Name = request.Name;
 
 
-                    _context.Products.Update(product);
-                    await _context.SaveChangesAsync();
+                   await _productRepository.UpdateAsync(product);
 
                     var data = _mapper.Map<UpdateProductCommandResponse>(product);
 

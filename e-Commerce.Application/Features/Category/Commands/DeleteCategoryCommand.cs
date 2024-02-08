@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using e_Commerce.Application.Interfaces;
 using e_Commerce.Application.Redis;
 using e_Commerce.Application.Response;
 using e_Commerce.Domain.Entities;
@@ -16,21 +17,22 @@ namespace e_Commerce.Application.Features.Category.Commands
     public class DeleteCategoryCommand : IRequestHandler<DeleteCategoryCommandRequest, DataResult>
     {
         private readonly IMapper _mapper;
-        private readonly IeCommerceDbContext _context;
+        private readonly ICategoryRepository _categoryRepository;
         private readonly IRedisCacheService _redisCacheService;
-        public DeleteCategoryCommand(IMapper mapper, IeCommerceDbContext context, IRedisCacheService redisCacheService)
+        public DeleteCategoryCommand(IMapper mapper, IRedisCacheService redisCacheService, ICategoryRepository categoryRepository)
         {
             _mapper = mapper;
-            _context = context;
             _redisCacheService = redisCacheService;
+            _categoryRepository = categoryRepository;
         }
 
         public async Task<DataResult> Handle(DeleteCategoryCommandRequest request, CancellationToken cancellationToken)
         {
             try
             {
-                bool any = await _context.Products.AnyAsync(x => x.CategoryId == request.Id);
-                if (any)
+               var category = await _categoryRepository.GetByIdAsync(request.Id);
+                if (category !=null)
+
                     return new DataResult
                     {
                         Data = null,
@@ -38,10 +40,9 @@ namespace e_Commerce.Application.Features.Category.Commands
                         Message = "Silmek istediğiniz kategoriye ait ürün(ler) var."
                     };
 
-                var category = await _context.Categories.FirstOrDefaultAsync(x => x.Id == request.Id);
+                var category2 = await _categoryRepository.GetByIdAsync(request.Id);
                 category.IsDeleted = true;
-                _context.Categories.Update(category);
-                await _context.SaveChangesAsync(cancellationToken);
+                await _categoryRepository.UpdateAsync(category);
 
                 await _redisCacheService.Clear("Category_" + category.Id);
 

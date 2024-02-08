@@ -34,7 +34,6 @@ namespace e_Commerce.Application.Features.Product.Commands
             {
                 var validator = new AddProductFluentValidatior();
                 var result = validator.Validate(request);
-                var test = await _productRepository.GetByCurrencyType(Domain.Enum.CurrencyTypeLookup.TRY);
                 if (result.IsValid)
                 {
                     var product = _mapper.Map<Domain.Entities.Product>(request); 

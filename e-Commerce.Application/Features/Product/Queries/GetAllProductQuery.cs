@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using e_Commerce.Application.Dtos;
+using e_Commerce.Application.Interfaces;
 using e_Commerce.Application.Redis;
 using e_Commerce.Application.Response;
 using e_Commerce.Domain.Entities;
@@ -20,13 +21,13 @@ namespace e_Commerce.Application.Features.Product.Queries
     public class GetAllProductQuery : IRequestHandler<GetAllProductQueryRequest, DataResult>
     {
         private readonly IMapper _mapper;
-        private readonly IeCommerceDbContext _context;
+        private readonly IProductRepository _productRepository;
         private readonly IRedisCacheService _redisCacheService;
-        public GetAllProductQuery(IMapper mapper, IeCommerceDbContext context, IRedisCacheService redisCacheService)
+        public GetAllProductQuery(IMapper mapper, IRedisCacheService redisCacheService, IProductRepository productRepository)
         {
             _mapper = mapper;
-            _context = context;
             _redisCacheService = redisCacheService;
+            _productRepository = productRepository;
         }
 
 

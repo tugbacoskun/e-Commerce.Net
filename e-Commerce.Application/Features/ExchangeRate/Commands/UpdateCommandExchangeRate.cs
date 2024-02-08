@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using e_Commerce.Application.Interfaces;
 using e_Commerce.Application.Response;
+using e_Commerce.Domain.Enum;
 using e_Commerce.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +16,11 @@ namespace e_Commerce.Application.Features.ExchangeRate.Commands
 {
     public class UpdateCommandExchangeRate : IRequestHandler<UpdateCommandRequestExchangeRate, bool>
     {
-        private readonly IeCommerceDbContext _context;
+        private readonly IExchangeRateRepository _exchangeRateRepository;
 
-        public UpdateCommandExchangeRate(IeCommerceDbContext context)
+        public UpdateCommandExchangeRate(IExchangeRateRepository exchangeRateRepository)
         {
-            _context = context;
+            _exchangeRateRepository = exchangeRateRepository;
         }
 
         public async Task<bool> Handle(UpdateCommandRequestExchangeRate request, CancellationToken cancellationToken)
@@ -31,29 +33,27 @@ namespace e_Commerce.Application.Features.ExchangeRate.Commands
                 decimal usdValue = Math.Round(Convert.ToDecimal(xmlVerisi.SelectSingleNode($"Tarih_Date/Currency[@Kod='USD']/ForexSelling").InnerText.Replace('.', ',')), 2);
                 decimal eurValue = Math.Round(Convert.ToDecimal(xmlVerisi.SelectSingleNode($"Tarih_Date/Currency[@Kod='EUR']/ForexSelling").InnerText.Replace('.', ',')), 2);
 
-                var exchangeRateUsd = await _context.ExchangeRates.FirstOrDefaultAsync(x => x.CurrencyTypeId == Domain.Enum.CurrencyTypeLookup.USD);
+                var exchangeRateUsd = await _exchangeRateRepository.FirstOrDefaultAsync(x => x.CurrencyTypeId == CurrencyTypeLookup.USD);
                 if (exchangeRateUsd != null)
                 {
                     exchangeRateUsd.Value = usdValue;
                 }
                 else
                 {
-                    exchangeRateUsd = new Domain.Entities.ExchangeRate { CurrencyTypeId = Domain.Enum.CurrencyTypeLookup.USD, Value = usdValue };
-                    await _context.ExchangeRates.AddAsync(exchangeRateUsd);
+                    exchangeRateUsd = new Domain.Entities.ExchangeRate { CurrencyTypeId = CurrencyTypeLookup.USD, Value = usdValue };
+                    await _exchangeRateRepository.AddAsync(exchangeRateUsd);
                 }
 
-                var exchangeRateEur = await _context.ExchangeRates.FirstOrDefaultAsync(x => x.CurrencyTypeId == Domain.Enum.CurrencyTypeLookup.EUR);
+                var exchangeRateEur = await _exchangeRateRepository.FirstOrDefaultAsync(x => x.CurrencyTypeId == CurrencyTypeLookup.EUR);
                 if (exchangeRateEur != null)
                 {
                     exchangeRateEur.Value = eurValue;
                 }
                 else
                 {
-                    exchangeRateEur = new Domain.Entities.ExchangeRate { CurrencyTypeId = Domain.Enum.CurrencyTypeLookup.EUR, Value = eurValue };
-                    await _context.ExchangeRates.AddAsync(exchangeRateEur);
+                    exchangeRateEur = new Domain.Entities.ExchangeRate { CurrencyTypeId = CurrencyTypeLookup.EUR, Value = eurValue };
+                    await _exchangeRateRepository.AddAsync(exchangeRateEur);
                 }
-
-                await _context.SaveChangesAsync();
 
                 return true;
 

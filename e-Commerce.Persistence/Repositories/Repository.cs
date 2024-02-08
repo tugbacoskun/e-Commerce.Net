@@ -17,7 +17,7 @@ namespace e_Commerce.Persistence.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<TEntity> GetByIdAsync(int id)
+        public async Task<TEntity> GetByIdAsync(Guid id)
         {
             return await _dbContext.Set<TEntity>().FindAsync(id);
         }

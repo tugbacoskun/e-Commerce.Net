@@ -13,9 +13,10 @@ namespace e_Commerce.Persistence
     public static class ServiceCollectionExtensionsPersistence
     {
         public static IServiceCollection ServiceCollectionExtension(this IServiceCollection services, IConfiguration configuration, params Type[] types)
-        { 
-           services.AddScoped<IProductRepository,ProductRepository>();
-
+        {
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IExchangeRateRepository, ExchangeRateRepository>();
             return services;
         }
     }
