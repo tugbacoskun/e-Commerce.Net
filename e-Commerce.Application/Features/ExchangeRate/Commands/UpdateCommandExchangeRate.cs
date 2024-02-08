@@ -31,7 +31,6 @@ namespace e_Commerce.Application.Features.ExchangeRate.Commands
                 decimal usdValue = Math.Round(Convert.ToDecimal(xmlVerisi.SelectSingleNode($"Tarih_Date/Currency[@Kod='USD']/ForexSelling").InnerText.Replace('.', ',')), 2);
                 decimal eurValue = Math.Round(Convert.ToDecimal(xmlVerisi.SelectSingleNode($"Tarih_Date/Currency[@Kod='EUR']/ForexSelling").InnerText.Replace('.', ',')), 2);
 
-                // USD ExchangeRate nesnesini kontrol et ve gerekirse güncelle veya ekle
                 var exchangeRateUsd = await _context.ExchangeRates.FirstOrDefaultAsync(x => x.CurrencyTypeId == Domain.Enum.CurrencyTypeLookup.USD);
                 if (exchangeRateUsd != null)
                 {
@@ -43,7 +42,6 @@ namespace e_Commerce.Application.Features.ExchangeRate.Commands
                     await _context.ExchangeRates.AddAsync(exchangeRateUsd);
                 }
 
-                // EUR ExchangeRate nesnesini kontrol et ve gerekirse güncelle veya ekle
                 var exchangeRateEur = await _context.ExchangeRates.FirstOrDefaultAsync(x => x.CurrencyTypeId == Domain.Enum.CurrencyTypeLookup.EUR);
                 if (exchangeRateEur != null)
                 {
@@ -55,7 +53,6 @@ namespace e_Commerce.Application.Features.ExchangeRate.Commands
                     await _context.ExchangeRates.AddAsync(exchangeRateEur);
                 }
 
-                // Değişiklikleri kaydet
                 await _context.SaveChangesAsync();
 
                 return true;
@@ -63,7 +60,6 @@ namespace e_Commerce.Application.Features.ExchangeRate.Commands
             }
             catch (Exception ex)
             {
-                // Hata durumunda hata mesajını logla
                 Console.WriteLine($"Hata oluştu: {ex.Message}");
                 return false;
             }

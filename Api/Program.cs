@@ -25,7 +25,7 @@ builder.Services.AddDbContextPool<eCommerceDbContext>(options =>
 builder.Services.AddTransient<IeCommerceDbContext, eCommerceDbContext>();
 
 ServiceCollectionExtensionsApplication.ServiceCollectionExtension(builder.Services,builder.Configuration);
-
+ServiceCollectionExtensionsPersistence.ServiceCollectionExtension(builder.Services, builder.Configuration);
 var redisConnectionString = builder.Configuration.GetConnectionString("Redis");
 builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnectionString));
 

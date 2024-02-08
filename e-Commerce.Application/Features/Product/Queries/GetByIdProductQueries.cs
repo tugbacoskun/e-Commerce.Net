@@ -1,19 +1,10 @@
 ﻿using AutoMapper;
-using e_Commerce.Application.Dtos;
 using e_Commerce.Application.Redis;
 using e_Commerce.Application.Response;
-using e_Commerce.Domain.Entities;
 using e_Commerce.Persistence;
 using MediatR;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace e_Commerce.Application.Features.Product.Queries
 {

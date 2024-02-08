@@ -1,8 +1,6 @@
 ﻿using e_Commerce.Application.Features.ExchangeRate.Commands;
-using e_Commerce.Application.Jobs;
 using e_Commerce.Application.Redis;
 using Hangfire;
-using Hangfire.MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -22,7 +20,7 @@ namespace e_Commerce.Application
             
             });
             services.AddScoped<UpdateCommandExchangeRate>();
-
+ 
             return services;
         }
     }
