@@ -16,6 +16,8 @@ namespace e_Commerce.Application.Dtos
         public string Image { get; set; }
         public CurrencyTypeLookup ProductCurrency { get; set; }
         public Guid CategoryId { get; set; }
+
+
         
     }
-}
+ }
