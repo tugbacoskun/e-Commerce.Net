@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{470C95DA-587
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{C8223FA9-7298-42CF-81D5-168B812679A1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presetation", "Presetation", "{6850312C-276B-464A-8C3C-1FD5EAC32F1A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{6850312C-276B-464A-8C3C-1FD5EAC32F1A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{D30B7EF9-72EC-4D42-A03A-A0CE18161CAC}"
 EndProject
@@ -17,15 +17,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Persistence", "Persistence"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{3CCD6169-89E1-445F-A4EF-D8D92CC607A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{6BF6AACD-9BB3-4141-8B8A-BAC14E35D7E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "Api\Api.csproj", "{6BF6AACD-9BB3-4141-8B8A-BAC14E35D7E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "e-Commerce.Persistence", "e-Commerce.Persistence\e-Commerce.Persistence.csproj", "{FA955637-BC28-4369-9970-82DD057A3DEC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "e-Commerce.Persistence", "e-Commerce.Persistence\e-Commerce.Persistence.csproj", "{FA955637-BC28-4369-9970-82DD057A3DEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "e-Commerce.Infrastructure", "e-Commerce.Infrastructure\e-Commerce.Infrastructure.csproj", "{EAB60489-6147-4F22-9859-B6799350573F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "e-Commerce.Infrastructure", "e-Commerce.Infrastructure\e-Commerce.Infrastructure.csproj", "{EAB60489-6147-4F22-9859-B6799350573F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "e_Commerce.Application", "e-Commerce.Application\e_Commerce.Application.csproj", "{432F576F-3A83-4359-805C-35587489D4EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "e_Commerce.Application", "e-Commerce.Application\e_Commerce.Application.csproj", "{432F576F-3A83-4359-805C-35587489D4EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "e-Commerce.Domain", "e-Commerce.Domain\e-Commerce.Domain.csproj", "{9268025A-D164-48FA-AB70-025DCEC992FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "e-Commerce.Domain", "e-Commerce.Domain\e-Commerce.Domain.csproj", "{9268025A-D164-48FA-AB70-025DCEC992FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
