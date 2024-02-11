@@ -15,10 +15,12 @@ namespace Api.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ILogger<CategoryController> _logger;
 
-        public CategoryController(IMediator mediator)
+        public CategoryController(IMediator mediator, ILogger<CategoryController> logger)
         {
             _mediator = mediator;
+            _logger = logger;
         }
 
         [HttpGet("GetById")]
@@ -31,9 +33,17 @@ namespace Api.Controllers
         [HttpGet("GetAllCategory")]
         public async Task<DataResult> GetAllCategory([FromQuery] GetAllCategoryRequestQuery request)
         {
-            var resp = await _mediator.Send(request);
-            return resp;
-
+            try
+            {
+                _logger.LogInformation("Request Name : GetAllCategory");
+                var resp = await _mediator.Send(request);
+                return resp;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(message: ex.Message, ex);
+                throw;
+            } 
         }
 
         [HttpPost("Add")]

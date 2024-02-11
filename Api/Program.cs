@@ -10,7 +10,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using ServiceStack;
+using ServiceStack.Text;
 using StackExchange.Redis;
 using System.Text;
 
@@ -40,6 +42,9 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddEntityFrameworkStores<eCommerceDbContext>()
     .AddDefaultTokenProviders();
 
+
+ 
+
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.User.RequireUniqueEmail = true;
@@ -63,12 +68,17 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["Jwt:ValidIssuer"],
         ValidAudience = builder.Configuration["Jwt:ValidAudience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"])),
-        ClockSkew = TimeSpan.Zero, // Messes with expiry!
+        ClockSkew = TimeSpan.Zero,
     };
 });
 
 builder.Services.AddTransient<IClaimsService, ClaimsService>();
 builder.Services.AddTransient<IJwtTokenService, JwtTokenService>();
+
+
+builder.Host.UseSerilog((context, configuration) =>
+    configuration.ReadFrom.Configuration(context.Configuration));
+
 
 var app = builder.Build();
 
@@ -81,10 +91,24 @@ RecurringJobs.Start();
 
 
 app.UseHttpsRedirection();
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
+
+ 
+
+
+app.UseSerilogRequestLogging();
+
+app.UseStaticFiles();
+
+
+
 
 app.Run();
