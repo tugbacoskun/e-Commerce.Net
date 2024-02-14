@@ -5,6 +5,7 @@ using e_Commerce.Application.Interfaces.IdentityInterfaces;
 using e_Commerce.Application.Jobs;
 using e_Commerce.Persistence;
 using Hangfire;
+using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -29,8 +30,8 @@ builder.Services.AddDbContextPool<eCommerceDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
-
 builder.Services.AddTransient<IeCommerceDbContext, eCommerceDbContext>();
+
 
 ServiceCollectionExtensionsApplication.ServiceCollectionExtension(builder.Services, builder.Configuration);
 ServiceCollectionExtensionsPersistence.ServiceCollectionExtension(builder.Services, builder.Configuration);
@@ -43,7 +44,18 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddDefaultTokenProviders();
 
 
- 
+builder.Services.AddMassTransit(x => {
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("localhost", "/", host =>
+        {
+            host.Username("user");
+            host.Password("password"); 
+        });
+    });
+});
+
+
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -71,7 +83,6 @@ builder.Services.AddAuthentication(options =>
         ClockSkew = TimeSpan.Zero,
     };
 });
-
 builder.Services.AddTransient<IClaimsService, ClaimsService>();
 builder.Services.AddTransient<IJwtTokenService, JwtTokenService>();
 
