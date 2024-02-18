@@ -1,8 +1,10 @@
 using Api.Identity;
 using e_Commerce.Application;
+using e_Commerce.Application.Configuration;
 using e_Commerce.Application.Features.ExchangeRate.Commands;
 using e_Commerce.Application.Interfaces.IdentityInterfaces;
 using e_Commerce.Application.Jobs;
+using e_Commerce.Infrastructure.Consumer;
 using e_Commerce.Persistence;
 using Hangfire;
 using MassTransit;
@@ -11,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using RabbitMQ.Client;
 using Serilog;
 using ServiceStack;
 using ServiceStack.Text;
@@ -44,16 +47,42 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddDefaultTokenProviders();
 
 
-builder.Services.AddMassTransit(x => {
+#region RabbitMQ Masstransit
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<SendEmailConsumer>();
+
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("localhost", "/", host =>
+        var rabbitMQSettings = builder.Configuration.GetSection("RabbitMQ").Get<RabbitMQSettings>();
+
+
+        cfg.Host(new Uri($"rabbitmq://{rabbitMQSettings.Host}:{rabbitMQSettings.Port}/"), h =>
         {
-            host.Username("user");
-            host.Password("password"); 
+            h.Username(rabbitMQSettings.Username);
+            h.Password(rabbitMQSettings.Password);
+        });
+
+        cfg.PrefetchCount = 32;
+        cfg.ExchangeType = ExchangeType.Direct;
+
+        cfg.ReceiveEndpoint("send-email-queue", e =>
+        {
+            e.ConcurrentMessageLimit = 28;
+            e.ConfigureConsumer<SendEmailConsumer>(context);
         });
     });
 });
+#endregion
+
+
+
+#region SmtpSettings
+var configuration = builder.Configuration;
+var smtpSettings = configuration.GetSection("SmtpSettings").Get<SmtpSettings>();
+builder.Services.AddSingleton(smtpSettings);
+#endregion
+
 
 
 

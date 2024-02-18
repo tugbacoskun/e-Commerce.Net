@@ -3,6 +3,8 @@ using e_Commerce.Application.Dtos;
 using e_Commerce.Application.Dtos.IdentityDtos;
 using e_Commerce.Application.Identity;
 using e_Commerce.Application.Interfaces.IdentityInterfaces;
+using e_Commerce.Infrastructure.Dtos;
+using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,18 +20,21 @@ namespace Api.Controllers
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IClaimsService _claimsService;
         private readonly IJwtTokenService _jwtTokenService;
+        private readonly ISendEndpointProvider _sendEndpointProvider;
 
         public UserController(
             UserManager<ApplicationUser> userManager,
             RoleManager<ApplicationRole> roleManager,
             IClaimsService claimsService,
-            IJwtTokenService jwtTokenService)
+            IJwtTokenService jwtTokenService,
+            ISendEndpointProvider sendEndpointProvider)
 
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _claimsService = claimsService;
             _jwtTokenService = jwtTokenService;
+            _sendEndpointProvider = sendEndpointProvider;
         }
 
         [HttpPost]
@@ -58,7 +63,13 @@ namespace Api.Controllers
 
             await SeedRoles();
             result = await _userManager.AddToRoleAsync(newUser, UserRoles.User);
-            //TODO: Eposta gönder
+
+
+
+            var queEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:eCommerce-send-email-queue"));
+            queEndpoint.Send<ISendEmailDto>(new SendEmailDto { Body = $"Merhaba {newUser.Email}. Kayıt işlemin başarılı. Kayıt işleminizi onaylamak için lütfen aşağıdaki linke tıklayınız.", Email = newUser.Email, IsHtml = true, Subject = $"Hoşgeldin {newUser.Email}" });
+
+
             return CreatedAtAction(nameof(Register), new UserRegisterResultDTO { Succeeded = true ,Message = $"Lütfen {userRegisterDTO.Email} adresine gönderilen e posta onay linkine tıklayınız."});
         }
         private async Task SeedRoles()
